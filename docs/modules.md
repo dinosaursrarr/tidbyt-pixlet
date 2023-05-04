@@ -276,3 +276,48 @@ def main(config):
         ),
     )
 ```
+
+## Pixlet module: Proto
+
+The `encoding/proto` module lets you work with [protocol buffers](https://protobuf.dev). Protocol Buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data.
+
+Protocol buffers provide a lightweight way for APIs to send data. Unlike JSON, however, you need to know the schema used by the API. Normally this is provided as one or more `.proto` files. Different APIs tend to use different schemas.
+
+| Function | Description |
+| --- | --- |
+| `register_files(path...)` | Takes one or more file paths relative to the current working directory. |
+| `new(name)` | Returns the descriptor for the named message type. |
+| `file(path)` | Returns the file descriptor for the named path. |
+| `marshal(msg)` | Converts the given message to a binary string in wire format. |
+| `unmarshal(str, msg)` | Converts the given binary string from wire format and writes into the provided message object. |
+
+To use proto messages of a given type, you first need to register the relevant proto files. You can then create messages by referring to the file path or the proto message name:
+
+```
+load("encoding/proto.star", "proto")
+
+def main(config):
+    proto.register_files("example_api.proto")
+
+    # Either of these create an empty request proto
+    msg1 = proto.new("example.Request")()
+    msg2 = proto.file("example_api.proto").Request()
+
+    # You can also create a message with some fields set, by passing the relevant values to the constructor:
+    msg3 = proto.new("example.Request")(id=123, request_msg="send help")
+```
+
+The main reason for creating proto messages is to use data from an API that returns protocol buffers. To do this, create an empty message of the relevant type and unmarshal the API response into it. You can then read fields off using dot syntax:
+
+```
+load("encoding/proto.star", "proto")
+
+def main(config):
+    proto.register_files("example_api.proto")
+
+    raw_pb = get_protobuf_from_api()  # binary string containing wire format
+    resp = proto.new("example.Response")()
+    proto.unmarshal(raw_pb, resp)
+
+    print(resp.result)  # Reads `result` field
+```

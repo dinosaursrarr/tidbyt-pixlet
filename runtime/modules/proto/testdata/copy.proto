@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package foo;
+
+message TestMessage {
+    optional string bar = 1;
+    optional int64 baz = 2;
+    repeated float qux = 3;
+}

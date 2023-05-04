@@ -26,6 +26,7 @@ import (
 	"tidbyt.dev/pixlet/runtime/modules/animation_runtime"
 	"tidbyt.dev/pixlet/runtime/modules/hmac"
 	"tidbyt.dev/pixlet/runtime/modules/humanize"
+	"tidbyt.dev/pixlet/runtime/modules/proto"
 	"tidbyt.dev/pixlet/runtime/modules/qrcode"
 	"tidbyt.dev/pixlet/runtime/modules/random"
 	"tidbyt.dev/pixlet/runtime/modules/render_runtime"
@@ -326,6 +327,9 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 		return starlark.StringDict{
 			starlibjson.Module.Name: starlibjson.Module,
 		}, nil
+
+	case "encoding/proto.star":
+		return proto.LoadModule()
 
 	case "hash.star":
 		return starlibhash.LoadModule()
